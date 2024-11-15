@@ -92,8 +92,13 @@ def ask():
     # Return the answer and image data
     return jsonify({'answer': answer, 'images': image_data})
 
-# Add initialization code at the module level
-pdf_path = 'knowledge.pdf'
-documents = extract_text_and_images(pdf_path)
-vectorstore = index_documents(documents)
-retriever = vectorstore.as_retriever()
+if __name__ == '__main__':
+    # Path to your PDF document
+    pdf_path = 'knowledge.pdf'
+
+    # Extract and index documents
+    documents = extract_text_and_images(pdf_path)
+    vectorstore = index_documents(documents)
+    retriever = vectorstore.as_retriever()
+
+    app.run(debug=True)
