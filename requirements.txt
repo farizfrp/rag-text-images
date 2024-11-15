@@ -2,4 +2,6 @@ flask
 langchain
 python-dotenv
 openai
+PyMuPDF==1.23.8
+pillow
 # Add any other dependencies your app uses 
