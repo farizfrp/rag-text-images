@@ -1,5 +1,5 @@
 # indexer.py
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 
 def index_documents(documents):
