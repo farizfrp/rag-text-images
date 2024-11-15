@@ -1,0 +1,5 @@
+flask
+langchain
+python-dotenv
+openai
+# Add any other dependencies your app uses 

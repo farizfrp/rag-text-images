@@ -1,0 +1,199 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cahaya Benteng Mas - Chat Assistant</title>
+    <style>
+        :root {
+            --primary-color: #c5a47e;
+            --secondary-color: #2c3e50;
+            --bg-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--bg-color);
+            color: var(--secondary-color);
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #eaeaea;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #b08f68;
+        }
+
+        #answer {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .image-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.25rem;
+        }
+
+        .confidence {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .company-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .company-header img {
+            max-width: 200px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="company-header">
+            <img src="/static/logo.png" alt="Cahaya Benteng Mas Logo">
+        </div>
+
+        <h1>Selamat datang di Assistant CBM</h1>
+        
+        <div class="input-group">
+            <input type="text" id="question" placeholder="Tanyakan sesuatu tentang Cahaya Benteng Mas...">
+            <button onclick="askQuestion()" id="askButton">Tanya</button>
+        </div>
+
+        <div class="loading" id="loading">Processing your question...</div>
+
+        <h2>Answer</h2>
+        <div id="answer"></div>
+
+        <h2>Related Images</h2>
+        <div id="images" class="images-grid"></div>
+    </div>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question');
+            const button = document.getElementById('askButton');
+            const loading = document.getElementById('loading');
+            
+            if (!question.value.trim()) return;
+
+            // Disable input and show loading
+            question.disabled = true;
+            button.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question.value }),
+                });
+
+                const data = await response.json();
+                
+                // Update answer
+                document.getElementById('answer').innerText = data.answer;
+                
+                // Update images
+                const imagesDiv = document.getElementById('images');
+                imagesDiv.innerHTML = '';
+                
+                data.images.forEach(imageData => {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    
+                    const img = document.createElement('img');
+                    img.src = '/' + imageData.filename;
+                    img.loading = 'lazy';
+                    
+                    const confidence = document.createElement('p');
+                    confidence.className = 'confidence';
+                    confidence.innerText = `Confidence: ${(imageData.confidence * 100).toFixed(1)}%`;
+                    
+                    card.appendChild(img);
+                    card.appendChild(confidence);
+                    imagesDiv.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('answer').innerText = 'An error occurred while processing your question.';
+            } finally {
+                // Re-enable input and hide loading
+                question.disabled = false;
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Allow pressing Enter to submit
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
