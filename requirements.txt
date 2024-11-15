@@ -3,7 +3,6 @@ langchain
 python-dotenv
 openai
 PyMuPDF==1.23.8
-pillow
 langchain-community
 
 
