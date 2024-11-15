@@ -6,6 +6,11 @@ from langchain import hub
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import load_prompt
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -58,7 +63,10 @@ def ask():
 
     # Use LangChain's RetrievalQA chain with the loaded prompt
     qa_chain = RetrievalQA.from_chain_type(
-        llm=ChatOpenAI(model="gpt-4o-mini", api_key="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"),
+        llm=ChatOpenAI(
+            model="gpt-4o-mini", 
+            api_key=os.getenv('OPENAI_API_KEY')
+        ),
         chain_type="stuff",
         retriever=retriever,
         chain_type_kwargs={
