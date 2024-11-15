@@ -4,4 +4,8 @@ python-dotenv
 openai
 PyMuPDF==1.23.8
 pillow
+langchain-community
+fitz
+faiss-cpu
+
 # Add any other dependencies your app uses 
